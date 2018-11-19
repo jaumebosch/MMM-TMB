@@ -69,7 +69,12 @@ Module.register("MMM-TMB", {
         table.appendChild(row);
 
         var iconCell = document.createElement("td");
-        iconCell.className = "bright fa fa-bus";
+        iconCell.className = "symbol align-right";
+        var iconSpan = document.createElement("span");
+        iconSpan.className = "fa fa-fw fa-bus";
+        
+        iconCell.appendChild(iconSpan);
+
         row.appendChild(iconCell);
 
         var lineCell = document.createElement("td");
