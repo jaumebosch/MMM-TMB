@@ -25,8 +25,8 @@ var config = {
 
 | Option           | Description
 |----------------- |-----------
-| `appId`          | *Required* Your MTA Bus Time API app ID. If you don't have one, you can request one [here](https://developer.tmb.cat/).<br><br> **Type:** `string` <br> **Default value:** `none`
-| `appKey`         | *Required* Your MTA Bus Time API app key. If you don't have one, you can request one [here](https://developer.tmb.cat/).<br><br> **Type:** `string` <br> **Default value:** `none`
-| `busStopCode`    | *Required* The 4 digit bus stop code to monitor. You can get it from your bus stop or find it [here](https://www.ambmobilitat.cat/principales/BusquedaParadas.aspx).<br><br> **Type:** `string` <br> **Default value:** `none`
+| `appId`          | *Required* Your TMB API appID. If you don't have one, you can request one [here](https://developer.tmb.cat/).<br><br> **Type:** `string` <br> **Default value:** `none`
+| `appKey`         | *Required* Your TMB API appKey. If you don't have one, you can request one [here](https://developer.tmb.cat/).<br><br> **Type:** `string` <br> **Default value:** `none`
+| `busStopCode`    | *Required* The 6 digit bus stop code to monitor. You can get it from your bus stop or find it [here](https://www.ambmobilitat.cat/principales/BusquedaParadas.aspx).<br><br> **Type:** `string` <br> **Default value:** `none`
 | `maxEntries`     | *Optional* The maximum number of buses to display. <br><br> **Possible values:** `1` to `10` <br> **Default value:** `5`
 | `refreshInterval` | *Optional* How often to check for the next bus. <br><br> **Type:** `int`<br> **Default value:** `30000` milliseconds (30 seconds)
