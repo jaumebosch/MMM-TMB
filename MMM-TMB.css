@@ -8,3 +8,15 @@
  * Custom here your css module
  *
  */
+
+.MMM-TMB {
+    width : 300px;
+}
+
+.stopName {
+	font-size: 14px;
+	line-height: 14px;
+	text-align: left;
+	padding: 0 5px;
+	white-space: nowrap;
+}

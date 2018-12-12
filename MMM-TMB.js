@@ -64,34 +64,54 @@ Module.register("MMM-TMB", {
         var table = document.createElement("table");
         table.className = "small";
 
-        var row = document.createElement("tr");
-        table.appendChild(row);
+        var maxEntries = this.iBus.lines.length;
+        if (this.iBus.lines.length > this.config.maxEntries){
+            var maxEntries = this.config.maxEntries;
+        }
 
-        var dayCell = document.createElement("td");
-        dayCell.innerHTML = this.iBus.lineCode;
-        row.appendChild(dayCell);
+        if (this.iBus.lines.length > 0){
+            for (index = 0; index < this.iBus.lines.length; ++index) {
+                var row = document.createElement("tr");
+                table.appendChild(row);
 
-        var conditionCell = document.createElement("td");
-        conditionCell.innerHTML = this.iBus.tInMin;
-        row.appendChild(conditionCell);
+                var iconCell = document.createElement("td");
+                iconCell.className = "symbol align-right";
+                var iconSpan = document.createElement("span");
+                iconSpan.className = "fa fa-fw fa-bus";
+                iconCell.appendChild(iconSpan);
+                row.appendChild(iconCell);
 
+                var lineCell = document.createElement("td");
+                lineCell.innerHTML = this.iBus.lines[index].lineCode;
+                row.appendChild(lineCell);
 
-        var maxTempCell = document.createElement("td");
-        maxTempCell.innerHTML = this.iBus.tInS;
-        row.appendChild(maxTempCell);
+                var stopCell = document.createElement("td");
+                stopCell.className = "stopName";
+                stopCell.innerHTML = this.iBus.busStopName;
+                row.appendChild(stopCell);
 
+                var timeCell = document.createElement("td");
+                timeCell.innerHTML = this.iBus.lines[index].tInMin + " min";
+                row.appendChild(timeCell);
+            }
+        }else{
+            var row = document.createElement("tr");
+            table.appendChild(row);
+
+            var noBusCell = document.createElement("td");
+            noBusCell.className = "dimmed light small";
+            noBusCell.innerHTML = "No buses at this moment";
+            row.appendChild(noBusCell);
+        }
 
         return table;
-        },
+    },
 
 // ##################################################################################
 // Override getHeader method
 // ##################################################################################
     getHeader: function() {
-        if (!this.config.appendLocationNameToHeader) {
-            return this.data.header + " 1111" ;
-        }
-        return this.data.header;
+        return "TMB iBus";
     },
 
     /* processResponse(data)
@@ -99,37 +119,18 @@ Module.register("MMM-TMB", {
      *
      */
     processResponse: function(data) {
-            this.iBus = data;
-            this.loaded = true;
-            this.updateDom(this.config.animationSpeed);
+        this.iBus = data;
+        this.loaded = true;
+        this.updateDom(this.config.animationSpeed);
     },
 
     socketNotificationReceived: function(notification, payload) {
         if (notification === "STARTED") {
             this.updateDom();
-        }
-        else if (notification === "DATA") {
+        }else if (notification === "DATA") {
             this.loaded = true;
-console.log(payload);
             this.processResponse(payload);
             this.updateDom();
         }
     },
-
-    hours12: function(date) {
-        return (date.getHours() + 24) % 12 || 12;
-    },
-
-    loadStationFile: function(callback) {
-        var xobj = new XMLHttpRequest();
-        xobj.overrideMimeType("application/json");
-        xobj.open("GET", this.file("station_list.json"), true);
-        xobj.onreadystatechange = function () {
-            if (xobj.readyState == 4 && xobj.status == "200") {
-                callback(xobj.responseText);
-            }
-        };
-        xobj.send(null);
-    },
-
 })

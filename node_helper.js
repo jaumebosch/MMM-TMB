@@ -19,24 +19,28 @@ module.exports = NodeHelper.create({
     getData: function() {
         var self = this;
 
-        var stopInfoUrl2 =  "https://api.tmb.cat/v1/transit" +
+        var iBus = new Object();
+        var stopInfoUrl =  "https://api.tmb.cat/v1/transit" +
             "/parades/" + self.config.busStopCode +
             "?app_id=" + self.config.appId +
             "&app_key=" + self.config.appKey;
 
-        var stopInfoUrl =  "http://192.168.1.135:8080/modules/MMM-TMB/stop.json";
         request({
             url: stopInfoUrl,
             method: 'GET',
         }, function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 var stopInfo =  JSON.parse(body);
+                var data = stopInfo.features[0].properties;
+                iBus = {
+                            busStopCode:data['CODI_PARADA'],
+                            busStopName:data['NOM_PARADA'],
+                        };
 
-                var stopUrl2 =  "https://api.tmb.cat/v1/ibus"+
+                var stopUrl =  "https://api.tmb.cat/v1/ibus"+
                     "/stops/" + self.config.busStopCode +
                     "?app_id=" + self.config.appId +
                     "&app_key=" + self.config.appKey;
-                var stopUrl =  "http://192.168.1.135:8080/modules/MMM-TMB/times.json";
 
                 request({
                     url: stopUrl,
@@ -44,23 +48,27 @@ module.exports = NodeHelper.create({
                 }, function (error, response, body) {
                     if (!error && response.statusCode == 200) {
                         var stopTimes =  JSON.parse(body);
-
-                        var iBus = new Array()
-                        var data = stopTimes.data.ibus[0];
-
-                        iBus['lineCode'] = data['line'];
-                        iBus['busStopCode'] = data['line'];
-                        iBus['tInS'] = data['t-in-s'];
-                        iBus['tInMin'] = data['t-in-min'];
-
-                        console.log(iBus);
+                        var line = new Array();
+                        iBus.lines = {};
+                        var data = stopTimes.data.ibus;
+                        var index;
+                        for (index = 0; index < data.length; ++index) {
+                            line.push(
+                                {
+                                    lineCode:data[index]['line'],
+                                    tInS:data[index]['t-in-s'],
+                                    tInText:data[index]['text-ca'],
+                                    tInMin:data[index]['t-in-min'],
+                                }
+                            );
+                            
+                        }
+                        iBus.lines = line;
                         self.sendSocketNotification("DATA", iBus);
                     }
                 });
             }
         });
-
-
 
 
         setTimeout(function() { self.getData(); }, this.config.refreshInterval);
