@@ -41,29 +41,28 @@ Module.register("MMM-TMB", {
         var wrapper = document.createElement("div");
 
         if (this.config.appId === "") {
-            wrapper.innerHTML = "Please set the correct <i>APP ID</i> in the config for module: " + this.name + ".";
+            wrapper.innerHTML = "Please set the correct <i>APP ID</i> in the config for module";
             wrapper.className = "dimmed light small";
             return wrapper;
         }
 
         if (this.config.appKey === "") {
-            wrapper.innerHTML = "Please set the correct <i>APP KEY</i> in the config for module: " + this.name + ".";
+            wrapper.innerHTML = "Please set the correct <i>APP KEY</i> in the config for module";
             wrapper.className = "dimmed light small";
             return wrapper;
         }
 
         if (this.config.busStationCode === "") {
-            wrapper.innerHTML = "Please set the <i>Station Code</i> in the config for module: " + this.name + ".";
+            wrapper.innerHTML = "Please set the <i>Station Code</i> in the config for module";
             wrapper.className = "dimmed light small";
             return wrapper;
         }
 
          if (this.config.blinkingTime > this.config.warningTime) {
-            wrapper.innerHTML = "Please set the <i>blinkingTime</i> value greater or equal than <i>warningTime</i> value for module: " + this.name + ".";
+            wrapper.innerHTML = "Please set the <i>blinkingTime</i> value greater or equal than <i>warningTime</i> value for module";
             wrapper.className = "dimmed light small";
             return wrapper;
         }
-
 
         if (!this.loaded) {
             wrapper.innerHTML = this.translate('LOADING');
