@@ -6,6 +6,8 @@ Go to your MagicMirror's `modules` folder and execute git clone `https://github.
 
 ## Using the module
 
+![alt text](https://github.com/jaumebosch/MMM-TMB/blob/master/images/screenshot.png)
+
 To use this module, add the following configuration block to the modules array in the `config/config.js` file:
 ```js
 var config = {
