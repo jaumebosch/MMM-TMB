@@ -6,7 +6,7 @@
  * By @jaumebosch
  * MIT Licensed.
  */
- 
+
 const NodeHelper = require('node_helper');
 var request = require('request');
 
@@ -38,9 +38,13 @@ module.exports = NodeHelper.create({
                             busStopName:data['NOM_PARADA'],
                         };
 
-                var stopUrl =  "https://api.tmb.cat/v1/ibus"+
-                   // "/lines/" + self.config.busLine +
-                    "/stops/" + self.config.busStopCode +
+                var stopUrl =  "https://api.tmb.cat/v1/ibus";
+
+                if (self.config.busLine){
+                   stopUrl += "/lines/" + self.config.busLine;
+                } 
+                   
+                stopUrl +=  "/stops/" + self.config.busStopCode +
                     "?app_id=" + self.config.appId +
                     "&app_key=" + self.config.appKey;
 
@@ -63,7 +67,6 @@ module.exports = NodeHelper.create({
                                     tInMin:data[index]['t-in-min'],
                                 }
                             );
-                            
                         }
                         iBus.lines = line;
                         self.sendSocketNotification("DATA", iBus);
@@ -71,7 +74,6 @@ module.exports = NodeHelper.create({
                 });
             }
         });
-
 
         setTimeout(function() { self.getData(); }, this.config.refreshInterval);
     },

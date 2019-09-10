@@ -14,3 +14,7 @@ Solved minor problems in data presentation
 ## [1.1.0] - New features
 
 Added visual warnings
+
+## [1.1.1] - Fix 
+
+Fixed warning time and blinking time magnitude as the API sends then in seconds

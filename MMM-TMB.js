@@ -13,8 +13,8 @@ Module.register("MMM-TMB", {
         maxEntries: 5,
         refreshInterval: 30000,
         retryDelay: 5000,
-        warningTime: 600000,
-        blinkingTime: 300000,
+        warningTime: 600,
+        blinkingTime: 300,
 
     },
 
