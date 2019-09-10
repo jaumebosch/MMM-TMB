@@ -3,7 +3,7 @@
 /* Magic Mirror
  * Module: MMM-TMB
  *
- * By
+ * By @jaumebosch
  * MIT Licensed.
  */
 
@@ -11,8 +11,11 @@ Module.register("MMM-TMB", {
     defaults: {
         timeFormat: config.timeFormat,
         maxEntries: 5,
-        refreshInterval: 6000,
-        retryDelay: 5000
+        refreshInterval: 30000,
+        retryDelay: 5000,
+        warningTime: 600000,
+        blinkingTime: 300000,
+
     },
 
     requiresVersion: "2.1.0", // Required version of MagicMirror
@@ -55,6 +58,13 @@ Module.register("MMM-TMB", {
             return wrapper;
         }
 
+         if (this.config.blinkingTime > this.config.warningTime) {
+            wrapper.innerHTML = "Please set the <i>blinkingTime</i> value greater or equal than <i>warningTime</i> value for module: " + this.name + ".";
+            wrapper.className = "dimmed light small";
+            return wrapper;
+        }
+
+
         if (!this.loaded) {
             wrapper.innerHTML = this.translate('LOADING');
             wrapper.className = "dimmed light small";
@@ -90,8 +100,20 @@ Module.register("MMM-TMB", {
                 stopCell.innerHTML = this.iBus.busStopName;
                 row.appendChild(stopCell);
 
+
+                var secs = this.iBus.lines[index].tInS;
+                var mins = this.iBus.lines[index].tInMin;
+
                 var timeCell = document.createElement("td");
-                timeCell.innerHTML = this.iBus.lines[index].tInMin + " min";
+                timeCell.innerHTML = mins + " min" ;
+                switch (true){
+                    case (secs <= this.config.blinkingTime):
+                        timeCell.className = "arriving blinking";
+                        break;
+                    case (secs < this.config.warningTime):
+                        timeCell.className = "arriving";
+                        break;
+                }
                 row.appendChild(timeCell);
             }
         }else{

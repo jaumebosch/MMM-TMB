@@ -1,16 +1,25 @@
-/*
+/* Magic Mirror
+ * Module: MMM-TMB
  *
- * MMM-TMB
- *
- *
+ * By @jaumebosch
  * MIT Licensed.
- *
- * Custom here your css module
- *
  */
 
 .MMM-TMB {
     width : 300px;
+}
+
+.blinking {
+    animation: blink 1s infinite alternate;
+}
+
+@-webkit-keyframes blink {
+    from {opacity:0;}
+    to {opacity: 1;}
+}
+
+.arriving {
+	color: #800000;
 }
 
 .stopName {

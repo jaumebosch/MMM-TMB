@@ -3,9 +3,10 @@
 /* Magic Mirror
  * Module: MMM-TMB
  *
+ * By @jaumebosch
  * MIT Licensed.
  */
-
+ 
 const NodeHelper = require('node_helper');
 var request = require('request');
 
@@ -38,6 +39,7 @@ module.exports = NodeHelper.create({
                         };
 
                 var stopUrl =  "https://api.tmb.cat/v1/ibus"+
+                   // "/lines/" + self.config.busLine +
                     "/stops/" + self.config.busStopCode +
                     "?app_id=" + self.config.appId +
                     "&app_key=" + self.config.appKey;

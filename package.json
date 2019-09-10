@@ -1,9 +1,9 @@
 {
   "name": "MMM-TMB",
-  "version": "1.0.0",
-  "description": "Todo: Insert description here!",
+  "version": "1.1.0",
+  "description": "Get bus schedules from Barcelona's TMB",
   "main": "MMM-TMB.js",
-  "author": "",
+  "author": "@jaumebosch",
   "license": "MIT",
   "devDependencies": {
     "grunt": "latest",
