@@ -2,7 +2,7 @@
 This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror/) to display Barcelona's TMB bus times
 
 ## Installation
-Go to your MagicMirror's `modules` folder and execute git clone `https://github.com/jaumebosch/MMM-TMB.git`.
+Go to your MagicMirror's `modules` folder and execute git clone `https://github.com/jaumebosch/MMM-TMB.git`. Then execute npm install to download required modules.
 
 ## Using the module
 
