@@ -15,6 +15,7 @@ Module.register("MMM-TMB", {
         retryDelay: 5000,
         warningTime: 600,
         blinkingTime: 300,
+        imminentTime: 60,
 
     },
 
@@ -108,6 +109,9 @@ Module.register("MMM-TMB", {
                 switch (true){
                     case (secs <= this.config.blinkingTime):
                         timeCell.className = "arriving blinking";
+                        if (secs <= this.config.imminentTime){
+                            timeCell.innerHTML = "imminent"
+                        }
                         break;
                     case (secs < this.config.warningTime):
                         timeCell.className = "arriving";
