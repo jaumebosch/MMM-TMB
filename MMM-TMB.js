@@ -84,19 +84,12 @@ Module.register("MMM-TMB", {
                 var row = document.createElement("tr");
                 table.appendChild(row);
 
-                var iconCell = document.createElement("td");
-                iconCell.className = "symbol align-right";
-                var iconSpan = document.createElement("span");
-                iconSpan.className = "fa fa-fw fa-bus";
-                iconCell.appendChild(iconSpan);
-                row.appendChild(iconCell);
-
                 var lineCell = document.createElement("td");
                 lineCell.innerHTML = this.iBus.lines[index].lineCode;
                 row.appendChild(lineCell);
 
                 var stopCell = document.createElement("td");
-                stopCell.className = "stopName";
+                stopCell.className = "stopName stopCell";
                 stopCell.innerHTML = this.iBus.busStopName;
                 row.appendChild(stopCell);
 
@@ -105,16 +98,17 @@ Module.register("MMM-TMB", {
                 var mins = this.iBus.lines[index].tInMin;
 
                 var timeCell = document.createElement("td");
+				timeCell.className = "timeCell";
                 timeCell.innerHTML = mins + " min" ;
                 switch (true){
                     case (secs <= this.config.blinkingTime):
-                        timeCell.className = "arriving blinking";
+						timeCell.className += " arriving blinking";
                         if (secs <= this.config.imminentTime){
                             timeCell.innerHTML = "imminent"
                         }
                         break;
                     case (secs < this.config.warningTime):
-                        timeCell.className = "arriving";
+                        timeCell.className += " arriving";
                         break;
                 }
                 row.appendChild(timeCell);
@@ -136,7 +130,7 @@ Module.register("MMM-TMB", {
 // Override getHeader method
 // ##################################################################################
     getHeader: function() {
-        return "TMB iBus";
+        return "<i class='fa fa-fw fa-bus'></i> TMB iBus";
     },
 
     /* processResponse(data)
