@@ -22,7 +22,7 @@ module.exports = NodeHelper.create({
 
         var iBus = new Object();
         var stopInfoUrl =  "https://api.tmb.cat/v1/transit" +
-            "/parades/" + self.config.busStopCode +
+            "/parades/" + Number(self.config.busStopCode) +
             "?app_id=" + self.config.appId +
             "&app_key=" + self.config.appKey;
 
@@ -42,9 +42,9 @@ module.exports = NodeHelper.create({
 
                 if (self.config.busLine){
                    stopUrl += "/lines/" + self.config.busLine;
-                } 
-                   
-                stopUrl +=  "/stops/" + self.config.busStopCode +
+                }
+
+                stopUrl +=  "/stops/" + Number(self.config.busStopCode) +
                     "?app_id=" + self.config.appId +
                     "&app_key=" + self.config.appKey;
 
