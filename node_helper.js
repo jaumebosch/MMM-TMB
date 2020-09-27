@@ -59,9 +59,14 @@ module.exports = NodeHelper.create({
                         var data = stopTimes.data.ibus;
                         var index;
                         for (index = 0; index < data.length; ++index) {
+							let busLine = data[index]['line']
+                        	if (self.config.busLine){
+                        		busLine = self.config.busLine
+							}
+
                             line.push(
                                 {
-                                    lineCode:data[index]['line'],
+									lineCode:busLine,
                                     tInS:data[index]['t-in-s'],
                                     tInText:data[index]['text-ca'],
                                     tInMin:data[index]['t-in-min'],

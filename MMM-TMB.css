@@ -22,6 +22,19 @@
 	color: #800000;
 }
 
+
+.timeCell {
+  min-width: 70px;
+  font-size: 16px;
+}
+
+.stopCell {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .stopName {
 	font-size: 14px;
 	line-height: 14px;
