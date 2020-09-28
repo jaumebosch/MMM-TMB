@@ -15,6 +15,13 @@ Solved minor problems in data presentation
 
 Added visual warnings
 
-## [1.1.1] - Fix 
+## [1.1.1] - Fix
 
 Fixed warning time and blinking time magnitude as the API sends then in seconds
+
+## [1.1.2] - Fixes
+
+Fixed error with leading zeroes in busStop code<br>
+Fixed showing undefined as busLine code when defining busLine<br>
+Changed layout
+
