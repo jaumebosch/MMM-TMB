@@ -8,88 +8,119 @@
  */
 
 const NodeHelper = require('node_helper');
-var request = require('request');
+const axios = require('axios');
+const request = require('request');
+const Log = require("../../js/logger");
 
 module.exports = NodeHelper.create({
 
-    start: function() {
-        this.started = false;
-        this.config = null;
-    },
+	start: function () {
+		Log.log("Starting node helper for: " + this.name);
+		this.started = false;
+		this.config = null;
+		this.config = null;
+	},
 
-    getData: function() {
-        var self = this;
+	getData: async function () {
+		const self = this;
+		let iBus = [];
 
-        var iBus = new Object();
-        var stopInfoUrl =  "https://api.tmb.cat/v1/transit" +
-            "/parades/" + Number(self.config.busStopCode) +
-            "?app_id=" + self.config.appId +
-            "&app_key=" + self.config.appKey;
+		let dataStop = {};
 
-        request({
-            url: stopInfoUrl,
-            method: 'GET',
-        }, function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                var stopInfo =  JSON.parse(body);
-                var data = stopInfo.features[0].properties;
-                iBus = {
-                            busStopCode:data['CODI_PARADA'],
-                            busStopName:data['NOM_PARADA'],
-                        };
+		for (let i = 0; i < self.config.busStops.length; i++) {
+			let busStopCode = Number(self.config.busStops[i].busStopCode);
+			let busLine = null;
+			if (self.config.busStops[i].busLine){
+				busLine = self.config.busStops[i].busLine;
+			}
 
-                var stopUrl =  "https://api.tmb.cat/v1/ibus";
+			dataStop = await self.fetchDataStop(busStopCode);
+			dataStop.dataLines = await self.fetchDataLine(busStopCode, busLine);
 
-                if (self.config.busLine){
-                   stopUrl += "/lines/" + self.config.busLine;
-                }
+			if (dataStop.dataLines.length > 0) {
+				iBus.push(dataStop);
+			}
+		}
 
-                stopUrl +=  "/stops/" + Number(self.config.busStopCode) +
-                    "?app_id=" + self.config.appId +
-                    "&app_key=" + self.config.appKey;
+		this.sendSocketNotification("DATA", iBus);
 
-                request({
-                    url: stopUrl,
-                    method: 'GET',
-                }, function (error, response, body) {
-                    if (!error && response.statusCode == 200) {
-                        var stopTimes =  JSON.parse(body);
-                        var line = new Array();
-                        iBus.lines = {};
-                        var data = stopTimes.data.ibus;
-                        var index;
-                        for (index = 0; index < data.length; ++index) {
-							let busLine = data[index]['line']
-                        	if (self.config.busLine){
-                        		busLine = self.config.busLine
-							}
+		setTimeout(function () {
+			self.getData();
+		}, self.config.refreshInterval);
+	},
 
-                            line.push(
-                                {
-									lineCode:busLine,
-                                    tInS:data[index]['t-in-s'],
-                                    tInText:data[index]['text-ca'],
-                                    tInMin:data[index]['t-in-min'],
-                                }
-                            );
-                        }
-                        iBus.lines = line;
-                        self.sendSocketNotification("DATA", iBus);
-                    }
-                });
-            }
-        });
+	fetchDataStop: async function(busStopCode) {
+		const self = this;
+		let dataStop = {};
 
-        setTimeout(function() { self.getData(); }, this.config.refreshInterval);
-    },
+		let busStopInfoUrl = "https://api.tmb.cat/v1/transit" +
+			"/parades/" + busStopCode +
+			"?app_id=" + self.config.appId +
+			"&app_key=" + self.config.appKey;
 
-    socketNotificationReceived: function(notification, payload) {
-        var self = this;
-        if (notification === 'CONFIG' && self.started == false) {
-            self.config = payload;
-            self.sendSocketNotification("STARTED", true);
-            self.getData();
-            self.started = true;
-        }
-    }
+
+		await axios.get(busStopInfoUrl)
+			.then(response => {
+				let stopInfoData = response.data.features[0].properties;
+				dataStop = {
+					busStopCode: stopInfoData['CODI_PARADA'],
+					busStopName: stopInfoData['NOM_PARADA'],
+				};
+			})
+			.catch(error => {
+				console.log(error);
+			});
+
+		return dataStop;
+	},
+
+	fetchDataLine: async function(busStopCode, busLine = null) {
+		const self = this;
+		let dataLine = [];
+
+		let busLineInfoUrl =  "https://api.tmb.cat/v1/ibus";
+
+		if (busLine){
+			busLineInfoUrl += "/lines/" + busLine;
+		}
+
+		busLineInfoUrl +=  "/stops/" + busStopCode +
+			"?app_id=" + self.config.appId +
+			"&app_key=" + self.config.appKey;
+
+		await axios.get(busLineInfoUrl)
+			.then(response => {
+				let lineInfoData = response.data.data.ibus;
+
+				for (let k = 0; k < lineInfoData.length; ++k) {
+					let busLineCode = lineInfoData[k]['line']
+					if (busLine){
+						busLineCode = busLine
+					}
+
+					dataLine.push(
+						{
+							lineCode:busLineCode,
+							tInS:lineInfoData[k]['t-in-s'],
+							tInText:lineInfoData[k]['text-ca'],
+							tInMin:lineInfoData[k]['t-in-min'],
+						}
+					);
+				}
+			})
+			.catch(error => {
+				console.log(error);
+			});
+
+		return dataLine;
+	},
+
+	socketNotificationReceived: function (notification, payload) {
+		if (notification === 'CONFIG' && this.started == false) {
+			this.config = payload;
+			this.sendSocketNotification("STARTED", true);
+			this.getData();
+			this.started = true;
+		}
+	}
 });
