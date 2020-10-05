@@ -35,8 +35,10 @@ var config = {
 | `warningTime`		| *Optional* Time for colored alarm. <br><br> **Type:** `int`<br> **Default value:** `600` seconds (10 minutes)
 | `blinkingTime`	| *Optional* Time for blinking alarm, must be less or equal than warningTime. <br><br> **Type:** `int`<br> **Default value:** `300` seconds (5 minutes)
 
+<br />
+<br />
 
-Te busStops array structure must be like this:
+The busStops array structure must be like this:
  ```js
 [
      {
@@ -47,5 +49,8 @@ Te busStops array structure must be like this:
  ]
 ```
 
+## busStops options
+| Option 			| Description
+|------------------ |-----------
 | `busStopCode`		| *Required* The 6 digit bus stop code to monitor. You can get it from your bus stop or find it [here](https://www.ambmobilitat.cat/principales/BusquedaParadas.aspx).<br><br> **Type:** `string` <br> **Default value:** `none`
 | `busLine`			| *Optional* The bus line number to retrieve only this line's info. If not set it will show all the bus lines of the defined bus stop <br><br> **Type:** `string` <br> **Default value:** `none`
