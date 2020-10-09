@@ -20,7 +20,6 @@
   "homepage": "https://github.com/jaumebosch/MMM-TMB/blob/master/README.md",
   "dependencies": {
     "moment": "latest",
-    "request": "latest",
     "axios": "latest"
   }
 }

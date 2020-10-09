@@ -9,7 +9,6 @@
 
 const NodeHelper = require('node_helper');
 const axios = require('axios');
-const request = require('request');
 const Log = require("../../js/logger");
 
 module.exports = NodeHelper.create({
