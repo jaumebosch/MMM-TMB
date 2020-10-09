@@ -1,6 +1,6 @@
 {
   "name": "MMM-TMB",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Get bus schedules from Barcelona's TMB",
   "main": "MMM-TMB.js",
   "author": "@jaumebosch",
