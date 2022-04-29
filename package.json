@@ -19,9 +19,9 @@
   },
   "homepage": "https://github.com/jaumebosch/MMM-TMB/blob/master/README.md",
   "dependencies": {
-    "ajv": "^8.10.0",
-    "axios": "^0.26.0",
+    "ajv": "^8.11.0",
+    "axios": "^0.26.1",
     "follow-redirects": "^1.14.9",
-    "moment": "^2.29.1"
+    "moment": "^2.29.3"
   }
 }
