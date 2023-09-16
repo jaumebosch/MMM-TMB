@@ -12,7 +12,8 @@ This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror
 [TMB](https://www.tmb.cat/en/home) (_Transports Metropolitans de Barcelona_) is the main public transport operator in Catalonia and a benchmark public mobility company in Europe and the world.
 
 ## Installation
-Go to your MagicMirror's `modules` folder and execute git clone `https://github.com/jaumebosch/MMM-TMB.git`. Then execute npm install to download required modules.
+Go to your MagicMirror's `modules` folder and execute <br />`git clone https://github.com/jaumebosch/MMM-TMB.git`. 
+<br />Then execute <br />`npm install` <br />to download required modules.
 
 ## Using the module
 
