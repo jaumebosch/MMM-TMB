@@ -13,6 +13,7 @@ This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror
 
 ## Installation
 Go to your MagicMirror's `modules` folder and execute <br />`git clone https://github.com/jaumebosch/MMM-TMB.git`
+<br />`cd MMM-TMB`
 <br />Then execute <br />`npm install` <br />to download required modules.
 
 ## Using the module
