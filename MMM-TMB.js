@@ -12,7 +12,7 @@ Module.register("MMM-TMB", {
     defaults: {
         timeFormat: config.timeFormat,
         maxEntries: 5,
-        refreshInterval: 30000,
+        refreshInterval: 60000,
         retryDelay: 5000,
         warningTime: 600,
         blinkingTime: 300,
