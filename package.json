@@ -1,7 +1,7 @@
 {
   "name": "MMM-TMB",
   "version": "1.2.0",
-  "description": "Get bus schedules from Barcelona's TMB",
+  "description": "A module for MagicMirror² to display bus schedules from Barcelona's TMB.",
   "main": "MMM-TMB.js",
   "author": "@jaumebosch",
   "license": "MIT",
@@ -10,8 +10,8 @@
     "url": "git+https://github.com/jaumebosch/MMM-TMB.git"
   },
   "keywords": [
-    "Magic",
-    "Mirror",
+    "MagicMirror",
+    "Public Transport",
     "Module"
   ],
   "bugs": {
