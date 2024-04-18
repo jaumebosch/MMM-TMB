@@ -6,7 +6,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Twitter Follow](https://img.shields.io/twitter/follow/jaumebosch.svg?style=social)](https://twitter.com/jaumebosch)
 <!-- badges: end -->
-This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror/) to display Barcelona's TMB bus times
+This is a module for the [MagicMirror²](https://github.com/MagicMirrorOrg/MagicMirror) to display Barcelona's TMB bus times
 
 ## Introduction
 [TMB](https://www.tmb.cat/en/home) (_Transports Metropolitans de Barcelona_) is the main public transport operator in Catalonia and a benchmark public mobility company in Europe and the world.
