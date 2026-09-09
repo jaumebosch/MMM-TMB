@@ -35,12 +35,27 @@ From your MagicMirror `modules` folder:
 
 ```bash
 git clone https://github.com/jaumebosch/MMM-TMB.git
-cd MMM-TMB
-npm install --omit=dev
 ```
 
-`npm install --omit=dev` installs nothing at all — the module has no runtime dependencies.
-Drop the flag if you intend to work on the module itself.
+That is the whole installation. There is **no `npm install` step**: the module has no runtime
+dependencies. Running it anyway would only rewrite `package-lock.json`, which then makes every
+later `git pull` fail with "local changes would be overwritten".
+
+## Updating
+
+```bash
+cd ~/MagicMirror/modules/MMM-TMB
+git pull
+```
+
+Then restart MagicMirror. If `git pull` refuses because `package.json` or `package-lock.json`
+were modified locally — the sign that `npm install` was run here at some point — put them aside
+and pull again:
+
+```bash
+git stash push package.json package-lock.json
+git pull
+```
 
 ## Usage
 
