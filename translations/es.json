@@ -1,0 +1,16 @@
+{
+  "HEADER": "TMB iBus",
+  "LOADING": "Cargando horarios…",
+  "NO_BUSES": "No hay ningún bus en este momento",
+  "IMMINENT": "inminente",
+  "MINUTES": "{minutes} min",
+  "ERROR_UNAVAILABLE": "Los horarios no están disponibles temporalmente",
+  "ERROR_STALE": "Los horarios están desactualizados",
+  "ERROR_CREDENTIALS_REJECTED": "TMB ha rechazado el appId / appKey",
+  "ERROR_MISSING_APP_ID": "Configura el appId de TMB en el módulo",
+  "ERROR_MISSING_APP_KEY": "Configura el appKey de TMB en el módulo",
+  "ERROR_MISSING_BUS_STOPS": "Define al menos una parada en busStops",
+  "ERROR_INVALID_BUS_STOP": "Código de parada no válido: {value}",
+  "ERROR_INVALID_NUMBER": "La opción {option} debe ser un número entre {min} y {max}",
+  "ERROR_INVALID_THRESHOLDS": "imminentTime ({imminentTime}) debe ser ≤ blinkingTime ({blinkingTime}) ≤ warningTime ({warningTime})"
+}

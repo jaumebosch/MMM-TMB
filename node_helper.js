@@ -1,125 +1,106 @@
-'use strict';
+"use strict";
 
-/* Magic Mirror
+/* MagicMirror²
  * Module: MMM-TMB
+ *
+ * Node helper: owns the API credentials, polls TMB and pushes snapshots to the
+ * front-end. Supports several module instances, each with its own poller.
  *
  * By @jaumebosch
  * MIT Licensed.
  */
 
-const NodeHelper = require('node_helper');
-const axios = require('axios');
-const Log = require("../../js/logger");
+const NodeHelper = require("node_helper");
+
+const { TmbClient } = require("./src/backend/tmb-client.js");
+const { ArrivalsService } = require("./src/backend/arrivals-service.js");
+const { Poller } = require("./src/backend/poller.js");
+const { normalizeConfig, validateConfig } = require("./src/shared/config.js");
+
+/** MagicMirror exposes its logger under different paths across versions. */
+function resolveLogger() {
+	for (const path of ["logger", "../../js/logger"]) {
+		try {
+			return require(path);
+		} catch {
+			// try the next candidate
+		}
+	}
+	return console;
+}
+
+const Log = resolveLogger();
 
 module.exports = NodeHelper.create({
-
-	start: function () {
-		Log.log("Starting node helper for: " + this.name);
-		this.started = false;
-		this.config = null;
-		this.config = null;
+	start() {
+		Log.info(`Starting node helper for: ${this.name}`);
+		/** @type {Map<string, {poller: Poller}>} keyed by module instance identifier */
+		this.instances = new Map();
 	},
 
-	getData: async function () {
-		const self = this;
-		let iBus = [];
+	stop() {
+		for (const { poller } of this.instances.values()) {
+			poller.stop();
+		}
+		this.instances.clear();
+	},
 
-		let dataStop = {};
+	socketNotificationReceived(notification, payload) {
+		if (notification === `${this.name}_CONFIG`) {
+			this.configure(payload?.identifier, payload?.config);
+		}
+	},
 
-		for (let i = 0; i < self.config.busStops.length; i++) {
-			let busStopCode = Number(self.config.busStops[i].busStopCode);
-			let busLine = null;
-			if (self.config.busStops[i].busLine){
-				busLine = self.config.busStops[i].busLine;
-			}
-
-			dataStop = await self.fetchDataStop(busStopCode);
-			dataStop.dataLines = await self.fetchDataLine(busStopCode, busLine);
-
-			if (dataStop.dataLines.length > 0) {
-				iBus.push(dataStop);
-			}
+	/**
+	 * (Re)starts polling for a single module instance. Called again on every
+	 * front-end restart, so it must tear down whatever was running before.
+	 *
+	 * @param {string} identifier MagicMirror module instance identifier
+	 * @param {object} rawConfig configuration block from `config/config.js`
+	 */
+	configure(identifier, rawConfig) {
+		if (!identifier) {
+			Log.error("[MMM-TMB] Received a config without a module identifier, ignoring it");
+			return;
 		}
 
-		this.sendSocketNotification("DATA", iBus);
+		this.instances.get(identifier)?.poller.stop();
+		this.instances.delete(identifier);
 
-		setTimeout(function () {
-			self.getData();
-		}, self.config.refreshInterval);
-	},
-
-	fetchDataStop: async function(busStopCode) {
-		const self = this;
-		let dataStop = {};
-
-		let busStopInfoUrl = "https://api.tmb.cat/v1/transit" +
-			"/parades/" + busStopCode +
-			"?app_id=" + self.config.appId +
-			"&app_key=" + self.config.appKey;
-
-
-		await axios.get(busStopInfoUrl)
-			.then(response => {
-				let stopInfoData = response.data.features[0].properties;
-				dataStop = {
-					busStopCode: stopInfoData['CODI_PARADA'],
-					busStopName: stopInfoData['NOM_PARADA'],
-				};
-			})
-			.catch(error => {
-				console.log(error);
-			});
-
-		return dataStop;
-	},
-
-	fetchDataLine: async function(busStopCode, busLine = null) {
-		const self = this;
-		let dataLine = [];
-
-		let busLineInfoUrl =  "https://api.tmb.cat/v1/ibus";
-
-		if (busLine){
-			busLineInfoUrl += "/lines/" + busLine;
+		const problems = validateConfig(rawConfig);
+		if (problems.length > 0) {
+			Log.error(`[MMM-TMB] Invalid configuration: ${problems.map((problem) => problem.key).join(", ")}`);
+			return;
 		}
 
-		busLineInfoUrl +=  "/stops/" + busStopCode +
-			"?app_id=" + self.config.appId +
-			"&app_key=" + self.config.appKey;
+		const config = normalizeConfig(rawConfig);
+		const service = new ArrivalsService({
+			client: new TmbClient({
+				appId: config.appId,
+				appKey: config.appKey,
+				timeoutMs: config.requestTimeout
+			}),
+			stops: config.busStops,
+			logger: Log
+		});
 
-		await axios.get(busLineInfoUrl)
-			.then(response => {
-				let lineInfoData = response.data.data.ibus;
-
-				for (let k = 0; k < lineInfoData.length; ++k) {
-					let busLineCode = lineInfoData[k]['line']
-					if (busLine){
-						busLineCode = busLine
-					}
-
-					dataLine.push(
-						{
-							lineCode:busLineCode,
-							tInS:lineInfoData[k]['t-in-s'],
-							tInText:lineInfoData[k]['text-ca'],
-							tInMin:lineInfoData[k]['t-in-min'],
-						}
-					);
+		const poller = new Poller({
+			task: () => service.collect(),
+			intervalMs: config.refreshInterval,
+			retryDelayMs: config.retryDelay,
+			onResult: (snapshot) => this.sendSocketNotification(`${this.name}_DATA`, { identifier, ...snapshot }),
+			isFatal: (error) => error?.fatal === true,
+			onError: (error) => {
+				const key = error?.fatal ? "ERROR_CREDENTIALS_REJECTED" : "ERROR_UNAVAILABLE";
+				Log.error(`[MMM-TMB] Refresh failed: ${error.message}`);
+				if (error?.fatal) {
+					Log.error(`[MMM-TMB] Polling stopped for ${identifier}; fix the credentials and restart.`);
 				}
-			})
-			.catch(error => {
-				console.log(error);
-			});
+				this.sendSocketNotification(`${this.name}_ERROR`, { identifier, key, message: error.message });
+			}
+		});
 
-		return dataLine;
-	},
-
-	socketNotificationReceived: function (notification, payload) {
-		if (notification === 'CONFIG' && this.started == false) {
-			this.config = payload;
-			this.sendSocketNotification("STARTED", true);
-			this.getData();
-			this.started = true;
-		}
+		this.instances.set(identifier, { poller });
+		poller.start();
 	}
 });

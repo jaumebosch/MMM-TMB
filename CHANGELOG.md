@@ -1,23 +1,72 @@
 # MMM-TMB Change Log
-All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/).
 
+All notable changes to this project are documented in this file.
+This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [1.0.0] - Unreleased
+## [2.0.0]
 
-First public release
+Full rewrite of the internals. The configuration stays backwards compatible: an existing
+`config.js` block keeps working, and the new options all have defaults.
 
-## [1.0.1] - Minor fixes
+### Breaking
 
-Solved minor problems in data presentation
+- Node.js 18 or newer is now required, and MagicMirror² 2.15.0 or newer.
+- The `timeFormat` option was removed; it was never used.
+- CSS classes are now namespaced (`.arriving` → `.MMM-TMB-warning` / `.MMM-TMB-blinking`,
+  `.stopCell` → `.MMM-TMB-stop`, `.timeCell` → `.MMM-TMB-time`). Custom CSS needs updating.
 
-## [1.1.0] - New features
+### Fixed
 
-Added visual warnings
+- API data is rendered with `textContent` instead of `innerHTML`, closing a script-injection
+  path through stop names.
+- `maxEntries` is now actually applied; it was documented but ignored.
+- Missing `appId` / `appKey` are now detected. The old check compared against `""` and never
+  fired, so a missing credential produced a silent, empty module.
+- API credentials no longer reach the logs. Failed requests used to log the full URL,
+  `app_id` and `app_key` included.
+- Requests now time out (`requestTimeout`) instead of hanging forever.
+- Failures are retried with exponential back-off (`retryDelay`), which was previously ignored.
+- A stop whose lookup fails no longer blanks the whole module; it degrades on its own.
+- Malformed API entries are skipped instead of rendering as `NaN min`.
+- Several instances of the module on one mirror no longer overwrite each other's data.
+- The refresh loop is torn down on stop, and restarting the mirror no longer leaks a timer.
+- The blink animation now has an unprefixed `@keyframes` rule and respects
+  `prefers-reduced-motion`.
 
-## [1.1.1] - Fix
+### Added
 
-Fixed warning time and blinking time magnitude as the API sends then in seconds
+- Translations: English, Catalan and Spanish. All user-facing text is translated.
+- Configuration validation with actionable messages rendered on the mirror.
+- Countdowns are recomputed locally every 15 s, so times stay accurate between refreshes, and the
+  DOM is only rebuilt when the output would actually differ.
+- Staleness detection: after three missed refreshes the module says the times are out of date
+  instead of counting a frozen snapshot down to "no buses".
+- Rejected credentials (HTTP 401/403) stop the polling loop and are reported as such, instead of
+  retrying against the API forever.
+- The API's `Retry-After` header is honoured on rate limits, capped at one hour.
+- `showDestination` renders the destination reported by the API, which was parsed and discarded.
+- `npm run smoke` queries the live API once to verify credentials, a stop code, or which fields a
+  stop actually returns.
+- Arrivals from every configured stop are merged and sorted by time to arrival.
+- `requestTimeout`, `showStopName` and `showDestination` options.
+- CSS custom properties for colours and stop-name width.
+- Stop names are cached after the first lookup, halving the number of API calls per refresh.
+- Stops are queried concurrently rather than one after another.
+- Test suite (`node --test`, 122 tests, ~99% line coverage), ESLint, Prettier and CI on
+  Node 18/20/22.
+
+### Removed
+
+- All runtime dependencies. `axios` was replaced by the built-in `fetch`; `moment`, `ajv` and
+  `follow-redirects` were unused.
+
+## [1.2.0] - Added MultiStop
+
+Now you can specify some routes and from diferent stops<br>
+Removed node_modules folder<br>
+Updated README.md<br>
+CSS fixes and improvements<br>
+Moved code to axios instead of request
 
 ## [1.1.2] - Fixes
 
@@ -25,11 +74,18 @@ Fixed error with leading zeroes in busStop code<br>
 Fixed showing undefined as busLine code when defining busLine<br>
 Changed layout
 
-## [1.2.0] - Added MultiStop
+## [1.1.1] - Fix
 
-Now you can specify some routes and from diferent stops
-Removed node_modules folder
-Updated README.md
-CSS fixes and improvements
-Moved code to axios instead of request
+Fixed warning time and blinking time magnitude as the API sends then in seconds
 
+## [1.1.0] - New features
+
+Added visual warnings
+
+## [1.0.1] - Minor fixes
+
+Solved minor problems in data presentation
+
+## [1.0.0] - Unreleased
+
+First public release

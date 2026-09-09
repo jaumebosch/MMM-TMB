@@ -1,0 +1,16 @@
+{
+  "HEADER": "TMB iBus",
+  "LOADING": "Carregant horaris…",
+  "NO_BUSES": "No hi ha cap bus en aquest moment",
+  "IMMINENT": "imminent",
+  "MINUTES": "{minutes} min",
+  "ERROR_UNAVAILABLE": "Els horaris no estan disponibles temporalment",
+  "ERROR_STALE": "Els horaris estan desactualitzats",
+  "ERROR_CREDENTIALS_REJECTED": "TMB ha rebutjat l'appId / appKey",
+  "ERROR_MISSING_APP_ID": "Cal configurar l'appId de TMB al mòdul",
+  "ERROR_MISSING_APP_KEY": "Cal configurar l'appKey de TMB al mòdul",
+  "ERROR_MISSING_BUS_STOPS": "Cal definir com a mínim una parada a busStops",
+  "ERROR_INVALID_BUS_STOP": "Codi de parada no vàlid: {value}",
+  "ERROR_INVALID_NUMBER": "L'opció {option} ha de ser un número entre {min} i {max}",
+  "ERROR_INVALID_THRESHOLDS": "imminentTime ({imminentTime}) ha de ser ≤ blinkingTime ({blinkingTime}) ≤ warningTime ({warningTime})"
+}
