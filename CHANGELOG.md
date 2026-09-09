@@ -3,6 +3,15 @@
 All notable changes to this project are documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.0.2]
+
+### Fixed
+
+- The route name was glued to the route number and sat above its baseline. The cells now align on
+  the baseline and are separated by `--mmm-tmb-column-gap`.
+- The shared `td` rule set `padding: 1px 0`, a shorthand more specific than the per-cell rules, so
+  every `padding-right` in the stylesheet was silently discarded. It now uses vertical longhand.
+
 ## [2.0.1]
 
 ### Fixed

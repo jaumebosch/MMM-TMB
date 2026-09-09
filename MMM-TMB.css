@@ -9,6 +9,7 @@
 	--mmm-tmb-warning-color: #d08770;
 	--mmm-tmb-imminent-color: #bf616a;
 	--mmm-tmb-stop-max-width: 200px;
+	--mmm-tmb-column-gap: 10px;
 
 	max-width: 350px;
 }
@@ -19,22 +20,31 @@
 }
 
 .MMM-TMB .MMM-TMB-row td {
-	padding: 1px 0;
-	vertical-align: middle;
+	/* Vertical longhand only. The shorthand is more specific than the per-cell
+	   rules below, so `padding: 1px 0` here would silently win over their
+	   padding-right and glue the columns together. */
+	padding-bottom: 1px;
+	padding-top: 1px;
+	/* Baseline, not middle: the small stop name has to sit on the same line as
+	   the much larger route number, not be centred against it. */
+	vertical-align: baseline;
 }
 
 .MMM-TMB .MMM-TMB-line {
 	font-weight: bold;
+	padding-right: var(--mmm-tmb-column-gap);
 	text-align: left;
+	/* Shrink to the widest route number so the gap is exactly the column gap,
+	   instead of this column soaking up the table's spare width. */
 	white-space: nowrap;
+	width: 1%;
 }
 
 .MMM-TMB .MMM-TMB-stop {
 	font-size: 14px;
-	line-height: 14px;
 	max-width: var(--mmm-tmb-stop-max-width);
 	overflow: hidden;
-	padding: 0 5px;
+	padding-right: var(--mmm-tmb-column-gap);
 	text-align: left;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -42,10 +52,9 @@
 
 .MMM-TMB .MMM-TMB-destination {
 	font-size: 14px;
-	line-height: 14px;
 	max-width: var(--mmm-tmb-stop-max-width);
 	overflow: hidden;
-	padding: 0 5px;
+	padding-right: var(--mmm-tmb-column-gap);
 	text-align: left;
 	text-overflow: ellipsis;
 	white-space: nowrap;
