@@ -113,6 +113,7 @@ override them from `css/custom.css` without touching the module:
   --mmm-tmb-warning-color: #ebcb8b;
   --mmm-tmb-imminent-color: #bf616a;
   --mmm-tmb-stop-max-width: 140px;
+  --mmm-tmb-column-gap: 10px;
 }
 ```
 

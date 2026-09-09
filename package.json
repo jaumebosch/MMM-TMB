@@ -1,6 +1,6 @@
 {
   "name": "mmm-tmb",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "MagicMirror\u00b2 module showing live Barcelona (TMB) bus arrival times",
   "main": "MMM-TMB.js",
   "author": "@jaumebosch",
