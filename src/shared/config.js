@@ -33,6 +33,7 @@
 		imminentTime: 60,
 		showStopName: true,
 		showDestination: false,
+		showHeaderIcon: true,
 		animationSpeed: 500
 	});
 
@@ -127,6 +128,7 @@
 		merged.appKey = isNonEmptyString(merged.appKey) ? merged.appKey.trim() : "";
 		merged.showStopName = merged.showStopName !== false;
 		merged.showDestination = merged.showDestination === true;
+		merged.showHeaderIcon = merged.showHeaderIcon !== false;
 
 		merged.busStops = (Array.isArray(source.busStops) ? source.busStops : [])
 			.map((stop) => {

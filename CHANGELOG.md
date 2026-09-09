@@ -3,6 +3,19 @@
 All notable changes to this project are documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.0.1]
+
+### Fixed
+
+- The header lost its bus icon in the 2.0.0 rewrite, which replaced the original markup with plain
+  text. The icon is back, and the label is escaped since MagicMirror renders the header as markup.
+- The README's example config set `header: "Bus"`, which silently replaced the "TMB iBus" title for
+  anyone who copied it. Removed.
+
+### Added
+
+- `showHeaderIcon` to turn the bus icon off.
+
 ## [2.0.0]
 
 Full rewrite of the internals. The configuration stays backwards compatible: an existing

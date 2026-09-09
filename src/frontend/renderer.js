@@ -26,6 +26,23 @@
 	 * @property {object} config normalised module configuration
 	 */
 
+	const HTML_ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+
+	const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);
+
+	/**
+	 * Builds the module header. MagicMirror renders it as markup, so this is the
+	 * one place the module emits HTML, and the label is escaped on the way in.
+	 *
+	 * @param {object} config normalised module configuration
+	 * @param {string} label header text, from `header` in config or the translation
+	 * @returns {string} the header markup
+	 */
+	function header(config, label) {
+		const text = escapeHtml(label);
+		return config.showHeaderIcon ? `<i class="fa fa-fw fa-bus" aria-hidden="true"></i> ${text}` : text;
+	}
+
 	function element(context, tag, className, text) {
 		const node = context.document.createElement(tag);
 		if (className) {
@@ -173,5 +190,5 @@
 			.join("\n");
 	}
 
-	return { render, fingerprint };
+	return { render, fingerprint, header };
 });
