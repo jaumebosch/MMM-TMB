@@ -3,6 +3,15 @@
 All notable changes to this project are documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.0.3]
+
+### Fixed
+
+- The installation instructions told users to run `npm install --omit=dev`. It installs nothing —
+  there are no runtime dependencies — but it does rewrite `package-lock.json`, so every later
+  `git pull` failed with "local changes would be overwritten". The step is gone, and there is now
+  an Updating section covering how to recover if it was already run.
+
 ## [2.0.2]
 
 ### Fixed
