@@ -18,8 +18,8 @@
     "translations"
   ],
   "scripts": {
-    "test": "node --test test/",
-    "test:coverage": "node --test --experimental-test-coverage test/",
+    "test": "node --test test/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage test/*.test.js",
     "smoke": "node tools/smoke.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

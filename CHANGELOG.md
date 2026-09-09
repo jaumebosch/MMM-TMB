@@ -52,7 +52,7 @@ Full rewrite of the internals. The configuration stays backwards compatible: an 
 - CSS custom properties for colours and stop-name width.
 - Stop names are cached after the first lookup, halving the number of API calls per refresh.
 - Stops are queried concurrently rather than one after another.
-- Test suite (`node --test`, 122 tests, ~99% line coverage), ESLint, Prettier and CI on
+- Test suite (`node --test`, 119 tests, ~99% line coverage), ESLint, Prettier and CI on
   Node 18/20/22.
 
 ### Removed
