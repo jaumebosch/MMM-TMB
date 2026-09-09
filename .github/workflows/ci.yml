@@ -40,3 +40,21 @@ jobs:
 
       - name: Test
         run: npm test
+
+  audit:
+    name: Audit dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      # The module has no runtime dependencies, so this guards the tooling.
+      - name: npm audit
+        run: npm audit --audit-level=high
