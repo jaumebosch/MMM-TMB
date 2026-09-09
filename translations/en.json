@@ -1,0 +1,16 @@
+{
+  "HEADER": "TMB iBus",
+  "LOADING": "Loading bus times…",
+  "NO_BUSES": "No buses at this moment",
+  "IMMINENT": "imminent",
+  "MINUTES": "{minutes} min",
+  "ERROR_UNAVAILABLE": "Bus times are temporarily unavailable",
+  "ERROR_STALE": "Bus times are out of date",
+  "ERROR_CREDENTIALS_REJECTED": "TMB rejected the appId / appKey",
+  "ERROR_MISSING_APP_ID": "Please set your TMB appId in the module config",
+  "ERROR_MISSING_APP_KEY": "Please set your TMB appKey in the module config",
+  "ERROR_MISSING_BUS_STOPS": "Please set at least one entry in busStops",
+  "ERROR_INVALID_BUS_STOP": "Invalid bus stop code: {value}",
+  "ERROR_INVALID_NUMBER": "Option {option} must be a number between {min} and {max}",
+  "ERROR_INVALID_THRESHOLDS": "imminentTime ({imminentTime}) must be ≤ blinkingTime ({blinkingTime}) ≤ warningTime ({warningTime})"
+}

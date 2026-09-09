@@ -1,27 +1,56 @@
 {
-  "name": "MMM-TMB",
-  "version": "1.2.0",
-  "description": "A module for MagicMirror² to display bus schedules from Barcelona's TMB.",
+  "name": "mmm-tmb",
+  "version": "2.0.0",
+  "description": "MagicMirror\u00b2 module showing live Barcelona (TMB) bus arrival times",
   "main": "MMM-TMB.js",
   "author": "@jaumebosch",
   "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "MMM-TMB.css",
+    "MMM-TMB.js",
+    "node_helper.js",
+    "src",
+    "tools",
+    "translations"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage test/*.test.js",
+    "smoke": "node tools/smoke.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run lint && npm run format:check && npm test"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jaumebosch/MMM-TMB.git"
   },
   "keywords": [
     "MagicMirror",
+    "MagicMirror2",
+    "module",
     "Public Transport",
-    "Module"
+    "TMB",
+    "Barcelona",
+    "bus",
+    "iBus",
+    "transit"
   ],
   "bugs": {
     "url": "https://github.com/jaumebosch/MMM-TMB/issues"
   },
-  "homepage": "https://github.com/jaumebosch/MMM-TMB/blob/master/README.md",
-  "dependencies": {
-    "ajv": "^8.11.0",
-    "axios": "^1.6.0",
-    "follow-redirects": "^1.15.6",
-    "moment": "^2.29.4"
+  "homepage": "https://github.com/jaumebosch/MMM-TMB#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^9.13.0",
+    "eslint-plugin-jsdoc": "^50.4.3",
+    "globals": "^15.11.0",
+    "prettier": "^3.3.3"
   }
 }

@@ -1,0 +1,21 @@
+version: 2
+
+updates:
+  # The module ships with no runtime dependencies; this keeps the tooling and
+  # the CI actions from ageing into the next batch of advisories.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

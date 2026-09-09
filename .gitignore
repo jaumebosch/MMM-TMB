@@ -1,4 +1,6 @@
 .DS_Store
-images/.DS_Store
 .idea
-**/node_modules
+.vscode
+coverage/
+node_modules/
+npm-debug.log*

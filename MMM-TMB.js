@@ -1,157 +1,180 @@
-/* global Module */
+/* global Module, Log, MMMTMB */
 
 /* MagicMirror²
  * Module: MMM-TMB
+ *
+ * Front-end module: validates the user configuration, keeps the latest
+ * snapshot received from the node helper and renders it.
  *
  * By @jaumebosch
  * MIT Licensed.
  */
 
-
 Module.register("MMM-TMB", {
-    defaults: {
-        timeFormat: config.timeFormat,
-        maxEntries: 5,
-        refreshInterval: 60000,
-        retryDelay: 5000,
-        warningTime: 600,
-        blinkingTime: 300,
-        imminentTime: 60,
-    },
+	// Keep in sync with `src/shared/config.js`; enforced by the test suite.
+	// This literal cannot reference the shared module: MagicMirror reads
+	// `defaults` before `getScripts()` dependencies are loaded.
+	defaults: {
+		appId: "",
+		appKey: "",
+		busStops: [],
+		maxEntries: 5,
+		refreshInterval: 60000,
+		retryDelay: 5000,
+		requestTimeout: 10000,
+		warningTime: 600,
+		blinkingTime: 300,
+		imminentTime: 60,
+		showStopName: true,
+		showDestination: false,
+		animationSpeed: 500
+	},
 
-    requiresVersion: "2.1.0", // Required version of MagicMirror
+	requiresVersion: "2.15.0",
 
-    // Define required scripts.
-    getScripts: function() {
-        return ["moment.js"];
-    },
+	/** How often the countdowns are recomputed locally, between API refreshes. */
+	tickInterval: 15000,
 
-    // Define requird styles
-    getStyles: function() {
-        return ["font-awesome.css", 'MMM-TMB.css'];
-    },
+	/** A snapshot older than this many refresh intervals is no longer trusted. */
+	staleAfterRefreshes: 3,
 
-    start: function() {
-        Log.info('Starting module: ' + this.name);
+	getScripts() {
+		return [
+			this.file("src/shared/config.js"),
+			this.file("src/shared/arrivals.js"),
+			this.file("src/frontend/renderer.js")
+		];
+	},
 
-        this.loaded = false;
-        this.sendSocketNotification('CONFIG', this.config);
-    },
+	getStyles() {
+		return ["font-awesome.css", this.file("MMM-TMB.css")];
+	},
 
-    getDom: function() {
-		let wrapper = document.createElement("div");
+	getTranslations() {
+		return {
+			en: "translations/en.json",
+			ca: "translations/ca.json",
+			es: "translations/es.json"
+		};
+	},
 
-        if (this.config.appId === "") {
-            wrapper.innerHTML = "Please set the correct <i>APP ID</i> in the config for module";
-            wrapper.className = "dimmed light small";
-            return wrapper;
-        }
+	getHeader() {
+		return this.data.header ?? this.translate("HEADER");
+	},
 
-        if (this.config.appKey === "") {
-            wrapper.innerHTML = "Please set the correct <i>APP KEY</i> in the config for module";
-            wrapper.className = "dimmed light small";
-            return wrapper;
-        }
+	start() {
+		Log.info(`Starting module: ${this.name}`);
 
-       /* if (this.config.busStationCode === "") {
-            wrapper.innerHTML = "Please set the <i>Station Code</i> in the config for module";
-            wrapper.className = "dimmed light small";
-            return wrapper;
-        }*/
+		this.problems = MMMTMB.config.validateConfig(this.config);
+		this.config = MMMTMB.config.normalizeConfig(this.config);
+		this.snapshot = { capturedAt: Date.now(), arrivals: [] };
+		this.loaded = false;
+		this.errorKey = null;
+		this.ticker = null;
+		this.rendered = null;
 
-         if (this.config.blinkingTime > this.config.warningTime) {
-            wrapper.innerHTML = "Please set the <i>blinkingTime</i> value greater or equal than <i>warningTime</i> value for module";
-            wrapper.className = "dimmed light small";
-            return wrapper;
-        }
+		if (this.problems.length > 0) {
+			Log.error(`${this.name}: ${this.problems.map((problem) => problem.key).join(", ")}`);
+			return;
+		}
 
-        if (!this.loaded) {
-            wrapper.innerHTML = this.translate('LOADING');
-            wrapper.className = "dimmed light small";
-            return wrapper;
-        }
+		this.sendSocketNotification(`${this.name}_CONFIG`, {
+			identifier: this.identifier,
+			config: this.config
+		});
+		this.startTicker();
+	},
 
-		let table = document.createElement("table");
-        table.className = "small";
+	suspend() {
+		this.stopTicker();
+	},
 
-		let maxEntries = this.config.maxEntries;
+	resume() {
+		if (this.problems.length === 0) {
+			this.startTicker();
+			this.updateDom(this.config.animationSpeed);
+		}
+	},
 
-        if (this.iBus.length > 0){
-            for (let i = 0; i < this.iBus.length; ++i) {
-				if (this.iBus[i].dataLines.length > 0) {
-					for (let j = 0; j < this.iBus[i].dataLines.length; ++j) {
-						let row = document.createElement("tr");
-						table.appendChild(row);
+	/**
+	 * Recomputes the countdowns locally so the display keeps counting down
+	 * between two node-helper refreshes.
+	 */
+	startTicker() {
+		if (this.ticker !== null) {
+			return;
+		}
+		this.ticker = setInterval(() => this.tick(), this.tickInterval);
+	},
 
-						let lineCell = document.createElement("td");
-						lineCell.innerHTML = this.iBus[i].dataLines[j].lineCode;
-						row.appendChild(lineCell);
+	stopTicker() {
+		if (this.ticker !== null) {
+			clearInterval(this.ticker);
+			this.ticker = null;
+		}
+	},
 
-						let stopCell = document.createElement("td");
-						stopCell.className = "stopName stopCell";
-						stopCell.innerHTML = this.iBus[i].busStopName;
-						row.appendChild(stopCell);
+	/**
+	 * Rebuilds the DOM only when the output would actually look different:
+	 * minutes roll over once a minute, so most ticks are a no-op.
+	 */
+	tick() {
+		if (MMMTMB.renderer.fingerprint(this.config, this.viewState()) !== this.rendered) {
+			this.updateDom();
+		}
+	},
 
-						let secs = this.iBus[i].dataLines[j].tInS;
-						let mins = this.iBus[i].dataLines[j].tInMin;
+	/** Everything the renderer needs, derived from the current module state. */
+	viewState() {
+		return {
+			problems: this.problems,
+			loaded: this.loaded,
+			stale: this.isStale(),
+			errorKey: this.errorKey,
+			arrivals: MMMTMB.arrivals.project(this.snapshot.arrivals, this.snapshot.capturedAt)
+		};
+	},
 
-						let timeCell = document.createElement("td");
-						timeCell.className = "timeCell";
-						timeCell.innerHTML = mins + " min";
-						switch (true) {
-							case (secs <= this.config.blinkingTime):
-								timeCell.className += " arriving blinking";
-								if (secs <= this.config.imminentTime) {
-									timeCell.innerHTML = "imminent"
-								}
-								break;
-							case (secs < this.config.warningTime):
-								timeCell.className += " arriving";
-								break;
-						}
-						row.appendChild(timeCell);
-					}
-				}else{
+	/**
+	 * True once the node helper has gone quiet for several refresh intervals.
+	 * Without this the module would keep counting a frozen snapshot down to zero
+	 * and then claim there are no buses.
+	 */
+	isStale() {
+		const maxAge = this.config.refreshInterval * this.staleAfterRefreshes;
+		return this.loaded && Date.now() - this.snapshot.capturedAt > maxAge;
+	},
 
-				}
-            }
-        }else{
-            let row = document.createElement("tr");
-            table.appendChild(row);
+	socketNotificationReceived(notification, payload) {
+		// The helper broadcasts to every instance of the module; ignore the
+		// snapshots that belong to a sibling instance.
+		if (payload?.identifier !== this.identifier) {
+			return;
+		}
 
-			let noBusCell = document.createElement("td");
-            noBusCell.className = "dimmed light small";
-            noBusCell.innerHTML = "No buses at this moment";
-            row.appendChild(noBusCell);
-        }
+		if (notification === `${this.name}_DATA`) {
+			this.snapshot = payload;
+			this.errorKey = payload.errors?.length > 0 ? "ERROR_UNAVAILABLE" : null;
+			this.loaded = true;
+			this.updateDom(this.config.animationSpeed);
+		} else if (notification === `${this.name}_ERROR`) {
+			this.errorKey = payload.key ?? "ERROR_UNAVAILABLE";
+			this.loaded = true;
+			this.updateDom(this.config.animationSpeed);
+		}
+	},
 
-        return table;
-    },
+	getDom() {
+		const state = this.viewState();
+		this.rendered = MMMTMB.renderer.fingerprint(this.config, state);
 
-// ##################################################################################
-// Override getHeader method
-// ##################################################################################
-    getHeader: function() {
-        return "<i class='fa fa-fw fa-bus'></i> TMB iBus";
-    },
-
-    /* processResponse(data)
-     * Uses the received data to set the various values.
-     *
-     */
-    processResponse: function(data) {
-        this.iBus = data;
-        this.loaded = true;
-       // this.updateDom(this.config.refreshInterval);
-    },
-
-    socketNotificationReceived: function(notification, payload) {
-        if (notification === "STARTED") {
-            this.updateDom();
-        }else if (notification === "DATA") {
-            this.loaded = true;
-            this.processResponse(payload);
-            this.updateDom();
-        }
-    },
-})
+		return MMMTMB.renderer.render(
+			{
+				document,
+				translate: (key, variables) => this.translate(key, variables),
+				config: this.config
+			},
+			state
+		);
+	}
+});
