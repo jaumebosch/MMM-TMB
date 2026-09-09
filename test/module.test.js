@@ -132,12 +132,28 @@ test("suspend stops the local ticker and resume restarts it", () => {
 	instance.dispose();
 });
 
-test("the header falls back to the translated default and honours a user override", () => {
+test("the header carries the bus icon and the translated default", () => {
 	const instance = createInstance(validConfig);
-	assert.equal(instance.getHeader(), "HEADER");
+	instance.start();
 
+	assert.equal(instance.getHeader(), '<i class="fa fa-fw fa-bus" aria-hidden="true"></i> HEADER');
+	instance.dispose();
+});
+
+test("a user-supplied header replaces the label but keeps the icon", () => {
+	const instance = createInstance(validConfig);
+	instance.start();
 	instance.data.header = "Mi parada";
-	assert.equal(instance.getHeader(), "Mi parada");
+
+	assert.equal(instance.getHeader(), '<i class="fa fa-fw fa-bus" aria-hidden="true"></i> Mi parada');
+	instance.dispose();
+});
+
+test("showHeaderIcon: false drops the icon", () => {
+	const instance = createInstance({ ...validConfig, showHeaderIcon: false });
+	instance.start();
+
+	assert.equal(instance.getHeader(), "HEADER");
 	instance.dispose();
 });
 

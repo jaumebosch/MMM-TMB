@@ -208,3 +208,14 @@ test("fingerprint does not collide when fields shift across the separator", () =
 		renderer.fingerprint(config, state({ arrivals: [arrival({ line: "67", stopName: " Pl." })] }))
 	);
 });
+
+test("the header escapes its label, since MagicMirror renders it as markup", () => {
+	assert.equal(
+		renderer.header(config, '<img src=x onerror="alert(1)">'),
+		'<i class="fa fa-fw fa-bus" aria-hidden="true"></i> &lt;img src=x onerror=&quot;alert(1)&quot;&gt;'
+	);
+});
+
+test("the header escapes the label with the icon turned off too", () => {
+	assert.equal(renderer.header({ ...config, showHeaderIcon: false }, "A & B"), "A &amp; B");
+});

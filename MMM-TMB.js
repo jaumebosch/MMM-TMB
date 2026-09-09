@@ -27,6 +27,7 @@ Module.register("MMM-TMB", {
 		imminentTime: 60,
 		showStopName: true,
 		showDestination: false,
+		showHeaderIcon: true,
 		animationSpeed: 500
 	},
 
@@ -59,7 +60,7 @@ Module.register("MMM-TMB", {
 	},
 
 	getHeader() {
-		return this.data.header ?? this.translate("HEADER");
+		return MMMTMB.renderer.header(this.config, this.data.header ?? this.translate("HEADER"));
 	},
 
 	start() {

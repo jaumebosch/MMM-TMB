@@ -50,7 +50,6 @@ Add the module to the `modules` array in `config/config.js`:
 {
     module: "MMM-TMB",
     position: "bottom_right",
-    header: "Bus",            // optional; defaults to a translated "TMB iBus"
     config: {
         appId: "YOUR_APP_ID",
         appKey: "YOUR_APP_KEY",
@@ -61,6 +60,10 @@ Add the module to the `modules` array in `config/config.js`:
     }
 }
 ```
+
+The header reads "TMB iBus" with a bus icon. To change the wording, set MagicMirror's standard
+`header` property alongside `module` and `position` — the icon stays, unless you turn it off with
+`showHeaderIcon`. Note that MagicMirror upper-cases header text.
 
 ## Configuration options
 
@@ -78,6 +81,7 @@ Add the module to the `modules` array in `config/config.js`:
 | `imminentTime`    | `int`     | `60`    | Seconds under which "imminent" replaces the countdown. Must be ≤ `blinkingTime`.                   |
 | `showStopName`    | `boolean` | `true`  | Show the stop name column. Useful to turn off when monitoring a single stop.                       |
 | `showDestination` | `boolean` | `false` | Show the destination reported by the API. Not every stop reports one; the cell is left empty then. |
+| `showHeaderIcon`  | `boolean` | `true`  | Show the bus icon next to the header title.                                                        |
 | `animationSpeed`  | `int`     | `500`   | Milliseconds of the fade used when the display updates.                                            |
 
 Out-of-range numbers are clamped to the limits above and reported in the MagicMirror log,
